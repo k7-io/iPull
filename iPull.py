@@ -1,4 +1,5 @@
 import requests
+import sys
 from concurrent.futures import ThreadPoolExecutor
 from pathlib import Path
 
@@ -9,6 +10,9 @@ def read_json(source):
     resp = requests.get(source)
     if resp.status_code == 200:
         return resp.json()
+    else:
+        print("invalid username provided")
+        sys.exit(1)
 
 
 def get_urls(page_data):
@@ -21,6 +25,12 @@ def get_urls(page_data):
         if picture["node"]["__typename"] == "GraphImage":
             url = picture["node"]["display_url"]
             img_urls.append(url)
+        if picture["node"]["__typename"] == "GraphSidecar":
+            sidecar_pictures = picture["node"]["edge_sidecar_to_children"]["edges"]
+            for sidecar_picture in sidecar_pictures:
+                if sidecar_picture["node"]["__typename"] == "GraphImage":
+                    url = sidecar_picture["node"]["display_url"]
+                    img_urls.append(url)
     return img_urls
 
 
@@ -75,8 +85,11 @@ def download_profile_image(data):
     with open("iPull/Profile_pic/" + filename, "wb") as img_file:
         img_file.write(image)
 
+
+username = input("Enter the Username: ")
+source = f"https://www.instagram.com/{username}/?__a=1"
 create_dir()
-data = read_json("https://www.instagram.com/k7.dat/?__a=1")
+data = read_json(source)
 u_id = get_user_id(data)
 is_private = val_profile_type(data)
 download_profile_image(data)
