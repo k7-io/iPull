@@ -120,9 +120,3 @@ if not is_private:
 else:
     print("The provided account is not Public and hence only the profile image is pulled")
 
-
-# In[ ]:
-
-
-
-
