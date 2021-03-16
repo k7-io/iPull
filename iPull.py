@@ -6,8 +6,10 @@ from pathlib import Path
 
 current_page = 1
 
+headers = {"User-Agent": "Mozilla/5.0 (X11; Linux x86_64; rv:78.0) Gecko/20100101 Firefox/78.0"}
+
 def read_json(source):
-    resp = requests.get(source)
+    resp = requests.get(source,headers=headers)
     if resp.status_code == 200:
         return resp.json()
     else:
